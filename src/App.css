@@ -1,0 +1,61 @@
+#root {
+  @apply m-0;
+}
+
+:focus {
+  @apply focus:outline;
+  outline-color: #ffd966;
+}
+
+nav {
+  .concentraction-logo {
+    @apply mx-auto;
+  }
+}
+
+footer {
+  @apply bg-no-repeat bg-origin-content bg-contain;
+  background-image: url("./assets/bg-footer.png");
+  background-position: 80%;
+}
+
+.layout {
+  background-repeat: repeat;
+  background-image: url("./assets/bg-page.svg");
+}
+
+::placeholder {
+  @apply font-nunito text-base leading-6;
+}
+
+.react-datepicker-wrapper {
+  width: fit-content;
+  input[type="text"] {
+    @apply px-0;
+  }
+}
+
+/*global styles applied to input*/
+input,
+textarea,
+.dropdown {
+  @apply border-b border-solid bg-transparent font-nunito outline-offset-4;
+}
+
+.text-light {
+  @apply border-light-grey transition-colors duration-300 ease-in-out hover:border-brand-blue placeholder:text-dark-grey [&:not(:placeholder-shown)]:border-brand-blue;
+}
+
+.text-dark {
+  @apply border-dark-grey text-neutral-white placeholder:text-dark-grey hover:border-neutral-white [&:not(:placeholder-shown)]:border-neutral-white;
+}
+
+.text-error {
+  @apply text-brand-red border-brand-red placeholder:text-brand-red;
+}
+
+.scrolltop:hover {
+  .segment {
+    @apply fill-brand-blue;
+  }
+}
