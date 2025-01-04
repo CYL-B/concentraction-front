@@ -10,7 +10,7 @@ import { onError } from "@apollo/client/link/error";
 
 //connect the ApolloClient instance with the GraphQL API and .
 const httpLink = createHttpLink({
-  uri: "http://localhost:5050/graphql",
+  uri: "https://thundering-night-round.on-fleek.app/",
 });
 
 //Add an authorization header to every HTTP request by chaining together Apollo Linkss
