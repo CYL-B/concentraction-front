@@ -1,6 +1,6 @@
 /** Day View component which displays all tasks for the current day */
 
-import { useState } from "react";
+import {  useState } from "react";
 import ListCard from "../../dnd/listCard";
 import Card from "../../dnd/card";
 import getTasksByDate from "../../../data/tasks";
@@ -35,7 +35,8 @@ import ListSlider from "../../../services/slickCarousel";
 //queries
 import { UPDATE_TASK } from "../../../services/queries";
 import { useMutation } from "@apollo/client";
-import throttleDnD from "../../../utils/hooks/useDebounce";
+import debounceDnD from "../../../utils/hooks/useDebounce";
+import { set } from "date-fns";
 
 export function DayView() {
   const [updateTask, { data, loading, error }] = useMutation(UPDATE_TASK, {
@@ -70,6 +71,31 @@ export function DayView() {
 
   //identifies which task is being dragged
   const [activeTaskId, setActiveTaskId] = useState(null);
+  const [draggedTask, setDraggedTask] = useState({});
+
+  const updateEachTask = () => {
+    console.log("try", draggedTask);
+    try {
+      updateTask({
+        variables: {
+          id: draggedTask.task.id,
+          content: {
+            name: draggedTask.task.name,
+            status: draggedTask.status,
+            category: draggedTask.task.category,
+          },
+        },
+      });
+      console.log("pass");
+    } catch (res) {
+      const errors = res.graphQLErrors.map((error) => {
+        return error.message;
+      });
+    }
+  };
+
+  const debouncedUpdateTask = debounceDnD(updateEachTask, 1000);
+
 
   //defines what triggers the drag
   const sensors = useSensors(
@@ -152,7 +178,6 @@ export function DayView() {
     );
     //returns over container
 
-    console.log("end", activeContainer);
     const overContainer = useFindListSectionContainer(listSections, over?.id);
 
     if (
@@ -186,29 +211,19 @@ export function DayView() {
         ),
       }));
     }
+    setDraggedTask({
+      task: getTaskById(tasks, activeTaskId),
+      status: overContainer,
+    });
+
+    console.log("over", overContainer)
+    console.log("drag",draggedTask)
 
     setActiveTaskId(null);
-    throttleDnD(function updateTaskAfterHover() {
-      try {
-        updateTask({
-          variables: {
-            id: active.id,
-            content: {
-              name: active.name,
-              status: overContainer,
-              category: active.category,
-            },
-          },
-        });
-        console.log("pass");
-      } catch (res) {
-        const errors = res.graphQLErrors.map((error) => {
-          return error.message;
-        });
-      }
-    }, 1000);
+    
+    // debouncedUpdateTask()
+    updateEachTask()
   };
-
   const dropAnimation = {
     ...defaultDropAnimation,
   };

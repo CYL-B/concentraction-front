@@ -64,7 +64,7 @@ export function LogInForm({ signUp }) {
         />
         <Input name="password" register={register} required />
         <Checkbox name="Data" register={register} required />
-        <Button role="submit" type="submit" />
+        <Button role="submit" type="submit" > Log-in </Button>
         <Link variant="fineprint" onClick={signUp}>
           Don't have an account? Sign up !{" "}
         </Link>

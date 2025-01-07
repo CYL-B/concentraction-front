@@ -1,7 +1,9 @@
-import throttle from "lodash.throttle";
-import { useCallback } from 'react'
+import debounce from "lodash.debounce";
+import { useCallback, useMemo } from 'react'
 
 
-export default function throttleDnD(functionToThrottle, delay) {
-    useCallback(throttle(() => {functionToThrottle}, delay));
+export default function debounceDnD(functionToDebounce, delay) {
+    return (
+    useMemo(()=>debounce(functionToDebounce, delay),  []))
 }
+

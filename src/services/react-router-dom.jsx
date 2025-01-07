@@ -32,7 +32,7 @@ export const routerNav = createBrowserRouter([
     path: "/",
     element: (
       <Suspense fallback={<div>Loading...</div>}>
-        <App />
+        <SignUp />
       </Suspense>
     ),
     errorElement: <ErrorPage />,
