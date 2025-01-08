@@ -1,6 +1,6 @@
 /** Day View component which displays all tasks for the current day */
 
-import {  useState } from "react";
+import { useState } from "react";
 import ListCard from "../../dnd/listCard";
 import Card from "../../dnd/card";
 import getTasksByDate from "../../../data/tasks";
@@ -33,33 +33,36 @@ import { useMediaQuery } from "../../../utils/hooks/mediaQueryHook";
 import ListSlider from "../../../services/slickCarousel";
 
 //queries
-import { UPDATE_TASK } from "../../../services/queries";
+import { UPDATE_TASKS_BATCH } from "../../../services/queries";
 import { useMutation } from "@apollo/client";
 import debounceDnD from "../../../utils/hooks/useDebounce";
 import { set } from "date-fns";
 
 export function DayView() {
-  const [updateTask, { data, loading, error }] = useMutation(UPDATE_TASK, {
-    onCompleted: (data) => {
-      //add confirmation message
-      console.log("hey", data);
-    },
-    // update(cache, { data }) {
-    //   //current state of tasks
-    //   const { tasks } = cache.readQuery({
-    //     query: GET_USER_TASKS,
-    //   });
-    //   //change the data within the cache for get user tasks, copying current tasks and adding the new one
-    //   cache.writeQuery({
-    //     query: GET_USER_TASKS,
-    //     data: {
-    //       user: {
-    //         tasks: [data.addTask, ...tasks],
-    //       },
-    //     },
-    //   });
-    // },
-  });
+  const [updateTasksBatch, { data, loading, error }] = useMutation(
+    UPDATE_TASKS_BATCH,
+    {
+      onCompleted: (data) => {
+        //add confirmation message
+        console.log("hey", data);
+      },
+      // update(cache, { data }) {
+      //   //current state of tasks
+      //   const { tasks } = cache.readQuery({
+      //     query: GET_USER_TASKS,
+      //   });
+      //   //change the data within the cache for get user tasks, copying current tasks and adding the new one
+      //   cache.writeQuery({
+      //     query: GET_USER_TASKS,
+      //     data: {
+      //       user: {
+      //         tasks: [data.addTask, ...tasks],
+      //       },
+      //     },
+      //   });
+      // },
+    }
+  );
 
   const tasks = getTasksByDate();
 
@@ -76,13 +79,11 @@ export function DayView() {
   const updateEachTask = () => {
     console.log("try", draggedTask);
     try {
-      updateTask({
+      updateTasksBatch({
         variables: {
-          id: draggedTask.task.id,
-          content: {
-            name: draggedTask.task.name,
+          updates: {
+            id: draggedTask.id,
             status: draggedTask.status,
-            category: draggedTask.task.category,
           },
         },
       });
@@ -94,8 +95,7 @@ export function DayView() {
     }
   };
 
-  const debouncedUpdateTask = debounceDnD(updateEachTask, 1000);
-
+  // const debouncedUpdateTask = debounceDnD(updateEachTask, 1000);
 
   //defines what triggers the drag
   const sensors = useSensors(
@@ -216,13 +216,10 @@ export function DayView() {
       status: overContainer,
     });
 
-    console.log("over", overContainer)
-    console.log("drag",draggedTask)
-
     setActiveTaskId(null);
-    
+
     // debouncedUpdateTask()
-    updateEachTask()
+    updateEachTask();
   };
   const dropAnimation = {
     ...defaultDropAnimation,

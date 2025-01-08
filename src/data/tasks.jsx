@@ -12,7 +12,7 @@ export default function getTasksByDate() {
     // Provide any required variables in this object.
   });
 
-  const tasks = dataFromBack.getTasks.user.tasks
+  const tasks = dataFromBack?.getTasks?.user?.tasks
 
 
   const date = new Date().toLocaleDateString("fr");

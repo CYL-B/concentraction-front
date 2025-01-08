@@ -6,28 +6,47 @@ import {
   ApolloLink,
   from,
 } from "@apollo/client";
+import { BatchHttpLink } from '@apollo/client/link/batch-http';
+import { setContext } from '@apollo/client/link/context';
+import gql from "graphql-tag";
+
+
 import { onError } from "@apollo/client/link/error";
 
 //connect the ApolloClient instance with the GraphQL API and .
-const httpLink = createHttpLink({
-  uri: "http://localhost:5050/graphql",
+// const httpLink = createHttpLink({
+//   uri: "http://localhost:5050/graphql",
+// });
+
+const batchLink = new BatchHttpLink({
+  uri: 'http://localhost:5050/graphql',
+  batchInterval: 10, // Time in ms to batch operations (e.g., 10ms)
 });
 
-//Add an authorization header to every HTTP request by chaining together Apollo Linkss
-const authLink = new ApolloLink((operation, forward) => {
-  // get the authentication token from local storage if it exists
+//Add an authorization header to every HTTP request by chaining together Apollo Links
+// const authLink = new ApolloLink((operation, forward) => {
+//   // get the authentication token from local storage if it exists
+//   const token = sessionStorage.getItem("token");
+
+//   operation.setContext(({ headers }) => ({
+//     // return the headers to the context
+//     headers: {
+//       authorization: token ? token : "",
+//       ...headers,
+//     },
+//   }));
+//   return forward(operation);
+// });
+
+const authLink = setContext((_, { headers }) => {
   const token = sessionStorage.getItem("token");
-  console.log("tokenfront", token);
-
-  operation.setContext(({ headers }) => ({
-    // return the headers to the context
+  return {
     headers: {
-      authorization: token ? token : "",
       ...headers,
+      authorization: token ? `${token}` : "",
     },
-  }));
-  return forward(operation);
-});
+  };
+})
 
 // const errorLink = onError(({ graphQLErrors, networkError }) => {
 //   if (graphQLErrors)
@@ -39,23 +58,20 @@ const authLink = new ApolloLink((operation, forward) => {
 //   if (networkError) console.error(`[Network error]: ${networkError}`);
 // });
 
-
-// const authLink = new ApolloLink((operation, forward) =>
-//   operation.setContext((_, { headers }) => {
-//     // get the authentication token from local storage if it exists
-//     const token = sessionStorage.getItem("token")
-//     ;
-//     // return the headers to the context
-//     return (
-//       forward(operation)
-//     );
-//   })
-// );
-
 //uri specifies the URL of our GraphQL server.
 
 export const apolloClient = new ApolloClient({
-  link: from([authLink, httpLink]),
+  link: from([authLink, batchLink]),
   cache: new InMemoryCache(),
   connectToDevTools: true,
 });
+
+apolloClient.query({
+  query: gql`
+    query TestQuery {
+      __typename
+    }
+  `,
+})
+  .then(response => console.log("GraphQL response:", response))
+  .catch(error => console.error("GraphQL error:", error));
