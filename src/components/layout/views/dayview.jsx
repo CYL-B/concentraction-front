@@ -3,7 +3,7 @@
 import { useState } from "react";
 import ListCard from "../../dnd/listCard";
 import Card from "../../dnd/card";
-import getTasksByDate from "../../../data/tasks";
+import GetTasksByDate from "../../../data/tasks";
 
 //custom hooks
 import {
@@ -33,38 +33,33 @@ import { useMediaQuery } from "../../../utils/hooks/mediaQueryHook";
 import ListSlider from "../../../services/slickCarousel";
 
 //queries
-import { UPDATE_TASKS_BATCH } from "../../../services/queries";
+import { UPDATE_TASK } from "../../../services/queries";
 import { useMutation } from "@apollo/client";
-import debounceDnD from "../../../utils/hooks/useDebounce";
-import { set } from "date-fns";
 
 export function DayView() {
-  const [updateTasksBatch, { data, loading, error }] = useMutation(
-    UPDATE_TASKS_BATCH,
-    {
-      onCompleted: (data) => {
-        //add confirmation message
-        console.log("hey", data);
-      },
-      // update(cache, { data }) {
-      //   //current state of tasks
-      //   const { tasks } = cache.readQuery({
-      //     query: GET_USER_TASKS,
-      //   });
-      //   //change the data within the cache for get user tasks, copying current tasks and adding the new one
-      //   cache.writeQuery({
-      //     query: GET_USER_TASKS,
-      //     data: {
-      //       user: {
-      //         tasks: [data.addTask, ...tasks],
-      //       },
-      //     },
-      //   });
-      // },
-    }
-  );
+  const [updateTask] = useMutation(UPDATE_TASK, {
+    onCompleted: (data) => {
+      //add confirmation message
+      console.log("pass", data);
+    },
+    onError: (error, data2) => {
+      console.error("Mutation error:", error.message);
+      console.log("data", data2);
+    },
+    update(cache, { data }) {
+      const modifiedTask = data.updateTask.task;
+      cache.modify({
+        id: cache.identify(modifiedTask.name),
+        fields: {
+          name(status) {
+            return (status = data.task.status);
+          },
+        },
+      });
+    },
+  });
 
-  const tasks = getTasksByDate();
+  const tasks = GetTasksByDate();
 
   //returns an object with properties named after a container, each property contains an array of tasks
   const initialBoardSections = useInitializeLists(tasks);
@@ -74,28 +69,6 @@ export function DayView() {
 
   //identifies which task is being dragged
   const [activeTaskId, setActiveTaskId] = useState(null);
-  const [draggedTask, setDraggedTask] = useState({});
-
-  const updateEachTask = () => {
-    console.log("try", draggedTask);
-    try {
-      updateTasksBatch({
-        variables: {
-          updates: {
-            id: draggedTask.id,
-            status: draggedTask.status,
-          },
-        },
-      });
-      console.log("pass");
-    } catch (res) {
-      const errors = res.graphQLErrors.map((error) => {
-        return error.message;
-      });
-    }
-  };
-
-  // const debouncedUpdateTask = debounceDnD(updateEachTask, 1000);
 
   //defines what triggers the drag
   const sensors = useSensors(
@@ -111,7 +84,7 @@ export function DayView() {
   };
 
   //destructure arguments
-  const handleDragOver = ({ active, over }) => {
+  const HandleDragOver = ({ active, over }) => {
     //active is the task being dragged
     //find title/id of activeContainer (to drag from)
     const activeContainer = useFindListSectionContainer(
@@ -170,7 +143,7 @@ export function DayView() {
   };
 
   //active is the task being dragged from and over is the list being dropped to
-  const handleDragEnd = ({ active, over }) => {
+  const HandleDragEnd = ({ active, over }) => {
     //returns active container
     const activeContainer = useFindListSectionContainer(
       listSections,
@@ -211,15 +184,23 @@ export function DayView() {
         ),
       }));
     }
-    setDraggedTask({
-      task: getTaskById(tasks, activeTaskId),
-      status: overContainer,
-    });
+
+    try {
+      console.log(activeTaskId, "activeTaskId", overContainer, "overContainer");
+      const response = updateTask({
+        variables: {
+          id: activeTaskId,
+          content: { status: overContainer },
+        },
+      });
+      console.log("Mutation response:", response);
+    } catch (res) {
+      const errors = res.graphQLErrors.map((error) => {
+        return error.message;
+      });
+    }
 
     setActiveTaskId(null);
-
-    // debouncedUpdateTask()
-    updateEachTask();
   };
   const dropAnimation = {
     ...defaultDropAnimation,
@@ -235,8 +216,8 @@ export function DayView() {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
-        onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
+        onDragEnd={HandleDragEnd}
+        onDragOver={HandleDragOver}
         onDragStart={handleDragStart}
       >
         <section className="flex justify-between items-center h-full">
