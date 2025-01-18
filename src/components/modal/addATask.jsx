@@ -36,26 +36,26 @@ export function AddATask() {
   const { closeModal } = useContext(ModalContext);
 
   //extracts addTask mutation from useMutation hook, loading, error
-  const [addTask, {data, loading, error }] = useMutation(ADD_TASK, {
+  const [addTask] = useMutation(ADD_TASK, {
     onCompleted: (data) => {
       //add confirmation message
       console.log("hey",data);
     },
-    // update(cache, { data }) {
-    //   //current state of tasks
-    //   const { tasks } = cache.readQuery({
-    //     query: GET_USER_TASKS,
-    //   });
-    //   //change the data within the cache for get user tasks, copying current tasks and adding the new one
-    //   cache.writeQuery({
-    //     query: GET_USER_TASKS,
-    //     data: {
-    //       user: {
-    //         tasks: [data.addTask, ...tasks],
-    //       },
-    //     },
-    //   });
-    // },
+    update(cache, { data }) {
+      //current state of tasks
+      const { tasks } = cache.readQuery({
+        query: GET_USER_TASKS,
+      });
+      //change the data within the cache for get user tasks, copying current tasks and adding the new one
+      cache.writeQuery({
+        query: GET_USER_TASKS,
+        data: {
+          user: {
+            tasks: [data.addTask, ...tasks],
+          },
+        },
+      });
+    },
   });
 
   const formatDateFn = (date) => {
