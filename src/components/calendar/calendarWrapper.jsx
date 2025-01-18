@@ -43,17 +43,6 @@ export default function CalendarWrapper() {
     ...Array.from(getDaysInMonth(currentYear, currentMonth)),
   ];
 
-  // for (var i = 0; i < numberOfDays.length; i++) {
-  //   for (var j = 0; j < tasksMap.length; j++) {
-  //     var convertedDate = Number(tasksMap[j].startDate);
-  //     var readableDate = new Date(convertedDate);
-  //     var checkDate = readableDate.toLocaleDateString("fr");
-
-  //     if (numberOfDays[i] === checkDate) {
-  //     }
-  //   }
-  // }
-
   return (
     <div className="calendarWrapper grid grid-cols-3 basis-3/4 gap-2">
       {numberOfDays.map((date, index) => (
