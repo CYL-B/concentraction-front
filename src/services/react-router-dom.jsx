@@ -5,7 +5,6 @@
 //React router dom import
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
-import App from "../App.jsx";
 import ProtectedRoutes from "../components/sign-up/protected-routes.jsx";
 
 //reduces build size
