@@ -10,7 +10,6 @@ import { ModalContext } from "../../modal/modalContext";
 // import { useApolloClient } from "@apollo/client";
 // import { GET_USER_TASKS } from "../../../services/queries";
 
-
 export function MonthView() {
   // const client = useApolloClient();
   // const { tasks } = client.readQuery({
@@ -21,8 +20,8 @@ export function MonthView() {
   const { handleOpenModal } = useContext(ModalContext);
 
   const openModal = () => {
-    handleOpenModal()
-  }
+    handleOpenModal();
+  };
   return (
     <section className="Monthview mt-[100px]">
       <div className="Monthview__calendar flex mb-6">
