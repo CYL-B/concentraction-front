@@ -3,25 +3,22 @@ import {
   ApolloClient,
   InMemoryCache,
   createHttpLink,
-  ApolloLink,
   from,
 } from "@apollo/client";
-import { BatchHttpLink } from '@apollo/client/link/batch-http';
+// import { BatchHttpLink } from '@apollo/client/link/batch-http';
 import { setContext } from '@apollo/client/link/context';
 import gql from "graphql-tag";
 
 
-import { onError } from "@apollo/client/link/error";
-
 //connect the ApolloClient instance with the GraphQL API and .
-// const httpLink = createHttpLink({
-//   uri: "http://localhost:5050/graphql",
-// });
-
-const batchLink = new BatchHttpLink({
-  uri: 'http://localhost:5050/graphql',
-  batchInterval: 10, // Time in ms to batch operations (e.g., 10ms)
+const httpLink = createHttpLink({
+  uri: "http://localhost:5050/graphql",
 });
+
+// const batchLink = new BatchHttpLink({
+//   uri: 'http://localhost:5050/graphql',
+//   batchInterval: 10, // Time in ms to batch operations (e.g., 10ms)
+// });
 
 //Add an authorization header to every HTTP request by chaining together Apollo Links
 // const authLink = new ApolloLink((operation, forward) => {
@@ -61,7 +58,7 @@ const authLink = setContext((_, { headers }) => {
 //uri specifies the URL of our GraphQL server.
 
 export const apolloClient = new ApolloClient({
-  link: from([authLink, batchLink]),
+  link: from([authLink, httpLink]),
   cache: new InMemoryCache(),
   connectToDevTools: true,
 });
