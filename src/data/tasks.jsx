@@ -1,26 +1,27 @@
 /** Tasks of the day
  * MUST INCLUDE query from back end to make it dynamic
  */
-import { GET_USER_TASKS } from "../services/queries";
+import { READ_TASKS } from "../services/queries";
 import { useApolloClient } from "@apollo/client";
-import { filteredTasks} from "../utils/hooks/getDate";
+import { filteredTasks } from "../utils/hooks/getDate";
 
-export default function getTasksByDate() {
+export default function GetTasksByDate() {
   const client = useApolloClient();
   const dataFromBack = client.readQuery({
-    query: GET_USER_TASKS,
+    query: READ_TASKS,
     // Provide any required variables in this object.
   });
 
-  const tasks = dataFromBack?.getTasks?.user?.tasks
-
+  console.log(dataFromBack, "dataFromBack")
+  const tasks = dataFromBack.getTasks.user.tasks
+  console.log(tasks, "tasks")
 
   const date = new Date().toLocaleDateString("fr");
-
+  
   const DAY_TASKS = filteredTasks(tasks, date)
+  
 
-  // console.log("day",DAY_TASKS)
-
+  console.log(DAY_TASKS, "DAY_TASKS")
   return DAY_TASKS;
 }
 
