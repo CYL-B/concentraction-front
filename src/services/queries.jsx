@@ -132,8 +132,6 @@ export const GET_USER_OBJECTIVES = gql`
       message
       user {
         objectives {
-          title
-          status
         }
       }
     }
