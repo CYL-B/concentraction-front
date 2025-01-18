@@ -25,7 +25,6 @@ function filteredTasks(taskArray, dateOfTheDay) {
       }
     }
   }
-
   return filteredTasks;
 }
 
