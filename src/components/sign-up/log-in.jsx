@@ -13,25 +13,31 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { LOGIN } from "../../services/queries.jsx";
 
-//sessionStorage
-import { useSessionStorage } from "../../utils/hooks/sessionStorage.jsx";
+//zod validation import
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 export function LogInForm({ signUp }) {
+  const schema = z.object({
+    email: z.string().min(1, { message: "Required" }).email({message: "Invalid email"}),
+    password: z.string().min(10, {message: "Too short"}).max(20, {message: "Too long"}),
+    terms: z.preprocess(value => value === 'on', z.boolean())
+  });
+
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: zodResolver(schema) });
 
   const navigate = useNavigate();
 
   const [login, { data, loading, error }] = useMutation(LOGIN, {
     onCompleted: (data) => {
-      // const [token, setToken] = useSessionStorage("token", null);
       if (data.login.success == true && data.login.token != null) {
         const tokenFromBack = data.login.token;
-       const token = sessionStorage.setItem("token", tokenFromBack);
+        const token = sessionStorage.setItem("token", tokenFromBack);
         console.log(token);
         //redirection
         navigate("/dashboard");
@@ -55,16 +61,28 @@ export function LogInForm({ signUp }) {
   return (
     <>
       <Heading1>Log in</Heading1>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
         <Input
           name="email"
           register={register}
-          aria-invalid={errors.example1 ? "true" : "false"}
+          ariaInvalid={errors.email ? "true" : "false"}
           required
+          errors={errors.email}
         />
-        <Input name="password" register={register} required />
-        <Checkbox name="Data" register={register} required />
-        <Button role="submit" type="submit" > Log-in </Button>
+        <Input
+          name="password"
+          register={register}
+          ariaInvalid={errors.password ? "true" : "false"}
+          required
+          type="password"
+          errors={errors.password}
+          
+        />
+        <Checkbox name="terms" register={register} required errors={errors.terms} boxContent="Accept terms and conditions"/>
+        <Button role="submit" type="submit">
+          {" "}
+          Log-in{" "}
+        </Button>
         <Link variant="fineprint" onClick={signUp}>
           Don't have an account? Sign up !{" "}
         </Link>
