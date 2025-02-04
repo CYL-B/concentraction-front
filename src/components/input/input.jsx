@@ -1,5 +1,5 @@
-/* Input component */ 
-import { Body } from "../typography";
+/* Input component */
+import { Body, Fineprint } from "../typography";
 
 /** register: props required to pass register function from react hook form
 required : part of the register function
@@ -12,7 +12,6 @@ error: props passed to register function to handle errors
 handleChange: props passed to monitor changes in input
 */
 
-
 export function Input({
   register,
   name,
@@ -21,7 +20,9 @@ export function Input({
   minLength,
   inputValue,
   type,
-  variant ="",
+  variant = "",
+  ariaInvalid,
+  errors,
   error,
   handleChange,
   ...inputProps
@@ -47,7 +48,8 @@ export function Input({
       </Body>
       <label htmlFor={name}>
         <input
-          {...register(name, {required: required}, {minLength: minLength})}
+          {...register(name, { required: required }, { minLength: minLength })}
+          aria-invalid={ariaInvalid}
           type={type}
           className={`${variant}`}
           id={name}
@@ -55,6 +57,11 @@ export function Input({
           onChange={handleChange}
           {...inputProps}
         ></input>
+        {errors && (
+          <Fineprint role="alert" classFineprint={"text-brand-red"}>
+            {errors.message}
+          </Fineprint>
+        )}
       </label>
     </fieldset>
   );
@@ -69,6 +76,8 @@ export function TextArea({
   type,
   variant = "text-light",
   error,
+  ariaInvalid,
+  errors,
   handleTextChange,
   ...textProps
 }) {
@@ -89,8 +98,9 @@ export function TextArea({
       </Body>
       <label htmlFor={name}>
         <textarea
-        {...register(name)}
+          {...register(name)}
           className={`${variant.toLowerCase()}`}
+          aria-invalid={ariaInvalid}
           id={name}
           type={type}
           onChange={handleTextChange}
@@ -98,6 +108,11 @@ export function TextArea({
           placeholder={placeholder}
           value={textValue}
         />
+        {errors && (
+          <Fineprint role="alert" classFineprint={"text-brand-red"}>
+            {errors.message}
+          </Fineprint>
+        )}
       </label>
     </fieldset>
   );
