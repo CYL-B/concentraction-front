@@ -46,5 +46,5 @@ export default function useFormHandler  (e,optionSelected)  {
     handleSelect,
     dropdownReset,
     dropdownOpen
-  };
-};
+  }
+}
