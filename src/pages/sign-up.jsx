@@ -8,7 +8,7 @@ export default function SignUp() {
   return (
     <>
       <div
-        id="Sign-up"
+        id={`${toggleAuth ? "sign-up" : "log-in"}`}
         className="sign-up flex flex-col gap-3 items-center justify-between bg-center bg-sign-up-mobile bg-no-repeat bg-cover overflow-hidden w-screen h-screen lg:bg-sign-up-desk lg:flex-row lg:gap-2 lg:px-40"
       >
         <SignUpImage />
@@ -16,7 +16,11 @@ export default function SignUp() {
           className="border-[5px] border-neutral-black flex flex-col items-center justify-around gap-1 p-4 rounded bg-neutral-white h-[90%] overflow-scroll w-[80%] mb-3
       lg:px-[140px] lg:gap-10 lg:w-3/5 lg:mb-0"
         >
-          {toggleAuth ? <SignUpForm logIn={()=>setToggleAuth(false)} /> : <LogInForm signUp={()=>setToggleAuth(true)} />}
+          {toggleAuth ? (
+            <SignUpForm logIn={() => setToggleAuth(false)} />
+          ) : (
+            <LogInForm signUp={() => setToggleAuth(true)} />
+          )}
         </div>
       </div>
     </>
