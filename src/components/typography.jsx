@@ -53,9 +53,9 @@ function Body({ children, body2 = false, classBody}) {
   );
 }
 
-function Fineprint({ children, classFineprint }) {
+function Fineprint({ children, classFineprint, role }) {
   return (
-    <p className={`font-nunito text-xs leading-[18px] ${classFineprint}`}>
+    <p className={`font-nunito text-xs leading-[18px] ${classFineprint}`} role={role}>
       {children}
     </p>
   );
