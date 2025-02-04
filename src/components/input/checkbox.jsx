@@ -3,16 +3,18 @@
  * setIsChecked : takes previous state and updates it
  */
 import { useState } from "react";
-import { Body } from "../typography";
+import { Body, Fineprint } from "../typography";
 
 export default function Checkbox({
   checkboxId,
   register,
   required,
   name,
+  errors,
   placeholder,
   checkboxTitle,
   checked,
+  boxContent,
   ...checkboxProps
 }) {
   const defaultChecked = checked ? checked : false;
@@ -41,8 +43,11 @@ export default function Checkbox({
             isChecked ? "line-through" : ""
           }`}
         >
-          {name}
+          {boxContent}
         </span>
+        {errors && (<Fineprint role="alert" classFineprint={"text-brand-red"}>
+          {errors.message}
+        </Fineprint>)}
       </label>
     </div>
   );
