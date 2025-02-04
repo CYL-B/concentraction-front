@@ -18,8 +18,6 @@ const ErrorPage = lazy(() => import("../pages/error-page.jsx"));
 
 const Dashboard = lazy(() => import("../pages/dashboard.jsx"));
 
-const LogIn = lazy(() => import("../pages/log-in.jsx"));
-
 const Pomodoro = lazy(() => import("../pages/pomodoro.jsx"));
 
 const Styleguide = lazy(() => import("../pages/styleguide.jsx"));
@@ -41,15 +39,6 @@ export const routerNav = createBrowserRouter([
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <SignUp />
-      </Suspense>
-    ),
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: "/log-in",
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <LogIn />
       </Suspense>
     ),
     errorElement: <ErrorPage />,
