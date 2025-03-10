@@ -21,7 +21,7 @@ export function LogInForm({ signUp }) {
   const schema = z.object({
     email: z.string().min(1, { message: "Required" }).email({message: "Invalid email"}),
     password: z.string().min(10, {message: "Too short"}).max(20, {message: "Too long"}),
-    terms: z.preprocess(value => value === 'on', z.boolean())
+    terms: z.boolean().refine(value => value === true, { message: "You must accept the terms and conditions" })
   });
 
   const {
@@ -78,7 +78,7 @@ export function LogInForm({ signUp }) {
           errors={errors.password}
           
         />
-        <Checkbox name="terms" register={register} required errors={errors.terms} boxContent="Accept terms and conditions"/>
+        <Checkbox name="terms" register={register} required errors={errors.terms}/>
         <Button role="submit" type="submit">
           {" "}
           Log-in{" "}
