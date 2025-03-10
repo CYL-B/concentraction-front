@@ -16,13 +16,24 @@ import { useSessionStorage } from "../../utils/hooks/sessionStorage.jsx";
 import { useMutation } from "@apollo/client";
 import { ADD_USER } from "../../services/queries.jsx";
 
+//zod validation import
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 export function SignUpForm({ logIn }) {
+  const schema = z.object({
+    name: z.string().min(1, { message: "Required" }).max(20, {message: "Too long"}),
+    email: z.string().min(1, { message: "Required" }).email({message: "Invalid email"}),
+    password: z.string().min(10, {message: "Too short"}).max(20, {message: "Too long"}),
+    terms: z.boolean().refine(value => value === true, { message: "You must accept the terms and conditions" })
+  });
+
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: zodResolver(schema) });
 
   const navigate = useNavigate();
 
@@ -30,23 +41,19 @@ export function SignUpForm({ logIn }) {
     onCompleted: (data) => {
       const dataFromBack = data.addUser;
       if (dataFromBack.success == true && dataFromBack.token != null) {
-
-        const token = sessionStorage.setItem("token", dataFromBack.token);
-        console.log(token);
-        
-        //needs to add redirection
+       console.log(dataFromBack.token);
+        const token = sessionStorage.setItem("token", dataFromBack.token);        
         navigate("/dashboard");
       }
     },
   });
-  //useeffect ?
   const onSubmit = (data) => {
-    console.log(addUser);
+    console.log(data);
     try {
       addUser({
         variables: {
-          name: data.Nom,
-          content: { email: data.Email, password: data.Password }
+          name: data.name,
+          content: { email: data.email, password: data.password }
         },
       });
     } catch (res) {
@@ -66,11 +73,12 @@ export function SignUpForm({ logIn }) {
       >
         <Input
           placeholder="Nom"
-          name="Nom"
+          name="name"
           register={register}
-          required={true}
+          required
           type="text"
-          aria-invalid={errors.example1 ? "true" : "false"}
+          aria-invalid={errors.name ? "true" : "false"}
+          errors={errors.name}
         />
         {/* <Input
           placeholder="Prénom"
@@ -81,21 +89,24 @@ export function SignUpForm({ logIn }) {
         /> */}
         <Input
           placeholder="Email"
-          name="Email"
+          name="email"
           register={register}
-          required={true}
+          required
           type="email"
+          aria-invalid={errors.email ? "true" : "false"}
+          errors={errors.email}
         />
         <Input
           placeholder="Password"
-          name="Password"
+          name="password"
           register={register}
-          required={true}
+          required
           type="password"
-          minLength={8}
+          aria-invalid={errors.password ? "true" : "false"}
+          errors={errors.password}
         />
 
-        <Checkbox name="Data" register={register} />
+        <Checkbox name="terms" register={register} errors={errors.terms}/>
         <Button role="submit" type="submit">
           Sign up
         </Button>
