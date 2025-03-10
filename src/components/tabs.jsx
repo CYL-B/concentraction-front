@@ -45,7 +45,7 @@ export default function Tabs({
           {renderContent(active)}
         </div>
       </div>
-      <div className="Monthview__buttons flex justify-between w-100">
+      <div className="Tabs__buttons flex justify-between w-100">
         <Button onClick={() => setActive("Day view")} variant="secondary">Today</Button>
         <Button onClick={openModal}>New Task</Button>
       </div>
