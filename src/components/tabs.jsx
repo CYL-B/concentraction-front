@@ -1,6 +1,8 @@
 /** Tabs used in dashboard page to show day view, week view and month view */
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { Button } from "./button";
 import { Heading3 } from "./typography";
+import { ModalContext } from "./modal/modalContext";
 export default function Tabs({
   tabsIds = [],
   getHeader = () => {},
@@ -12,6 +14,11 @@ export default function Tabs({
   //getHeader = function passed as a prop which returns the name of each tab button
   //renderContent = function passed as a prop which returns the active content based on the active tab id.
   const [active, setActive] = useState(tabsIds[0]);
+    const { handleOpenModal } = useContext(ModalContext);
+  
+  const openModal = () => {
+    handleOpenModal();
+  };
 
   return (
     <>
@@ -37,6 +44,10 @@ export default function Tabs({
         <div id={active} className="tab__content h-full">
           {renderContent(active)}
         </div>
+      </div>
+      <div className="Monthview__buttons flex justify-between w-100">
+        <Button onClick={() => setActive("Day view")} variant="secondary">Today</Button>
+        <Button onClick={openModal}>New Task</Button>
       </div>
     </>
   );
