@@ -14,13 +14,13 @@ export default function Checkbox({
   placeholder,
   checkboxTitle,
   checked,
-  boxContent,
+  boxContent = "Accept terms and conditions",
   ...checkboxProps
 }) {
   const defaultChecked = checked ? checked : false;
   const [isChecked, setIsChecked] = useState(defaultChecked);
   return (
-    <div className="checkbox-wrapper">
+    <div className="checkbox-wrapper" role="checkbox">
       <Body classBody="block font-bold">{checkboxTitle}</Body>
       <label htmlFor={name} className="group flex items-center ">
         <input
@@ -45,10 +45,10 @@ export default function Checkbox({
         >
           {boxContent}
         </span>
-        {errors && (<Fineprint role="alert" classFineprint={"text-brand-red"}>
+      </label>
+      {errors && (<Fineprint role="alert" classFineprint={"text-brand-red"}>
           {errors.message}
         </Fineprint>)}
-      </label>
     </div>
   );
 }
