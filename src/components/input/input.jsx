@@ -20,10 +20,9 @@ export function Input({
   minLength,
   inputValue,
   type,
-  variant = "",
+  variant = "text-light",
   ariaInvalid,
   errors,
-  error,
   handleChange,
   ...inputProps
 }) {
@@ -41,7 +40,7 @@ export function Input({
   let titleOfInput = name.charAt(0).toUpperCase() + name.slice(1);
 
   return (
-    <fieldset className="input-wrapper flex flex-col gap-2 w-fit">
+    <fieldset className="input-wrapper flex flex-col gap-2 w-full">
       <Body body2={true} classBody={`font-bold ${titleHeading}`}>
         {" "}
         {titleOfInput}
@@ -51,7 +50,7 @@ export function Input({
           {...register(name, { required: required }, { minLength: minLength })}
           aria-invalid={ariaInvalid}
           type={type}
-          className={`${variant}`}
+          className={`w-full ${variant}`}
           id={name}
           placeholder={placeholder}
           onChange={handleChange}
@@ -75,7 +74,6 @@ export function TextArea({
   textValue,
   type,
   variant = "text-light",
-  error,
   ariaInvalid,
   errors,
   handleTextChange,
@@ -92,14 +90,14 @@ export function TextArea({
   let titleOfText = name.charAt(0).toUpperCase() + name.slice(1);
 
   return (
-    <fieldset className="text-wrapper flex flex-col gap-2">
+    <fieldset className="text-wrapper flex flex-col gap-2 w-full">
       <Body body2={true} classBody={`font-bold ${titleHeading}`}>
         {titleOfText}
       </Body>
       <label htmlFor={name}>
         <textarea
           {...register(name)}
-          className={`${variant.toLowerCase()}`}
+          className={`w-full ${variant.toLowerCase()}`}
           aria-invalid={ariaInvalid}
           id={name}
           type={type}
