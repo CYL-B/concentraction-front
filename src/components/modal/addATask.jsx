@@ -18,6 +18,10 @@ import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@apollo/client";
 import { ADD_TASK, GET_USER_TASKS } from "../../services/queries.jsx";
 
+//zod validation import
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 //"handleSubmit" will validate your inputs before invoking "onSubmit"
 //register : register your input into the hook by invoking the "register" function
 //include validation with required or other standard HTML validation rules
@@ -25,36 +29,62 @@ import { ADD_TASK, GET_USER_TASKS } from "../../services/queries.jsx";
 //Controller allows us to use react-hook-form with custom components and third party components like customDropdown and datePicker
 
 export function AddATask() {
+  const schema = z.object({
+    title: z
+      .string()
+      .min(1, { message: "Required" })
+      .max(20, { message: "Too long" }),
+    description: z
+      .string()
+      .max(200, { message: "Message should be less than 200 characters" }),
+    deadline: z.coerce.date(),
+    startDate: z.coerce.date(),
+    status: z.enum(["TODO", "ONGOING", "DONE"]),
+    priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+    category: z.enum(["ARTICLES", "PHOTOGRAPHY", "WORK", "PERSONAL", "OTHER"]),
+  });
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm();
+  } = useForm({ resolver: zodResolver(schema) });
 
   //consumer component
-  const { closeModal } = useContext(ModalContext);
+  const { closeModal, todayTask } = useContext(ModalContext);
 
   //extracts addTask mutation from useMutation hook, loading, error
   const [addTask] = useMutation(ADD_TASK, {
     onCompleted: (data) => {
       //add confirmation message
-      console.log("hey",data);
+      console.log("hey", data);
+      // closeModal();
     },
     update(cache, { data }) {
-      //current state of tasks
-      const { tasks } = cache.readQuery({
-        query: GET_USER_TASKS,
-      });
-      //change the data within the cache for get user tasks, copying current tasks and adding the new one
-      cache.writeQuery({
-        query: GET_USER_TASKS,
-        data: {
-          user: {
-            tasks: [data.addTask, ...tasks],
+      try {
+        const existingData = cache.readQuery({
+          query: GET_USER_TASKS,
+        });
+
+        // Ensure tasks is always an array
+        const tasks = existingData?.user?.tasks || [];
+
+        // Modify the cache safely
+        cache.writeQuery({
+          query: GET_USER_TASKS,
+          data: {
+            getTasks: {
+              ...existingData.getTasks,
+              user: {
+                ...existingData?.user, // Preserve other user data
+                tasks: [data.addTask, ...tasks], // it's always an array
+              },
+            },
           },
-        },
-      });
+        });
+      } catch (error) {
+        console.error("Cache update error:", error);
+      }
     },
   });
 
@@ -70,17 +100,17 @@ export function AddATask() {
     // );
   };
 
-  const onSubmit = (data) => {
-    const startDate = data.StartDate;
-    const endDate = data.echeance;
-   
+  const onSubmit = async (data) => {
+    const startDate = data.startDate;
+    const endDate = data.deadline;
+
     try {
-      addTask({
+      await addTask({
         variables: {
           content: {
-            name: data.titre,
+            name: data.title,
             priority: data.priority,
-            status: data.statut,
+            status: data.status,
             category: data.category,
             startDate: startDate ? formatDateFn(startDate) : null,
             endDate: endDate ? formatDateFn(endDate) : null,
@@ -88,11 +118,14 @@ export function AddATask() {
           },
         },
       });
-      console.log("pass");
-    } catch (res) {
-      const errors = res.graphQLErrors.map((error) => {
-        return error.message;
-      });
+    } catch (error) {
+      console.error("Error adding task:", error);
+
+      if (error.graphQLErrors) {
+        error.graphQLErrors.forEach((err) =>
+          console.error("GraphQL Error:", err.message)
+        );
+      }
     }
   };
 
@@ -102,38 +135,58 @@ export function AddATask() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full h-full flex flex-col justify-around  "
+      className="w-full h-full flex flex-col justify-around g "
     >
-      <div className="input-wrapper bg-neutral-white rounded-md p-2.5 mx-10 border border-solid border-brand-blue">
+      <div className="input-wrapper flex flex-col items-center bg-neutral-white rounded-md p-2.5 mx-10 border border-solid border-brand-blue gap-2">
         <Input
+          placeholder="Titre"
           type="text"
-          name="titre"
+          name="title"
+          required
           register={register}
-          aria-invalid={errors.example1 ? "true" : "false"}
+          errors={errors.title}
+          ariaInvalid={errors.title ? "true" : "false"}
         />
 
-        <TextArea name="description" register={register} />
+        <TextArea
+          placeholder="Description"
+          name="description"
+          register={register}
+          type="text"
+          errors={errors.description}
+          ariaInvalid={errors.description ? "true" : "false"}
+        />
         <Controller
           control={control}
-          name="echeance"
-          
+          name="deadline"
           render={({ field: { onChange, value } }) => (
-            <InputDatePicker onChange={onChange} value={value} dateTitle="Deadline" />
+            <>
+              <InputDatePicker
+                onChange={onChange}
+                value={value}
+                errors={errors.deadline}
+                dateTitle="Échéance"
+              />
+            </>
           )}
         />
 
         <Controller
           control={control}
-          name="StartDate"
+          name="startDate"
           render={({ field: { onChange, value } }) => (
-            <InputDatePicker onChange={onChange} value={value} dateTitle="Start date"/>
+            <InputDatePicker
+              onChange={onChange}
+              value={todayTask?.startDate !== "" ? todayTask?.startDate : value}
+              errors={errors.startDate}
+              dateTitle="Start date"
+            />
           )}
         />
 
-
         <Controller
           control={control}
-          name="statut"
+          name="status"
           render={({ field: { onChange, value } }) => (
             <CustomDropdown
               options={[
@@ -142,7 +195,8 @@ export function AddATask() {
                 { name: "DONE" },
               ]}
               onChange={onChange}
-              value={value}
+              errors={errors.status}
+              value={todayTask?.status !== "" ? todayTask?.status : value}
               headerTitle={"Statut"}
             />
           )}
@@ -153,13 +207,10 @@ export function AddATask() {
           name="priority"
           render={({ field: { onChange, value } }) => (
             <CustomDropdown
-              options={[
-                { name: "LOW" },
-                { name: "MEDIUM" },
-                { name: "HIGH" },
-              ]}
+              options={[{ name: "LOW" }, { name: "MEDIUM" }, { name: "HIGH" }]}
               onChange={onChange}
               value={value}
+              errors={errors.priority}
               headerTitle={"Priority"}
             />
           )}
@@ -169,6 +220,7 @@ export function AddATask() {
           name="category"
           render={({ field: { onChange, value } }) => (
             <CustomDropdown
+              errors={errors.category}
               options={[
                 { name: "ARTICLES" },
                 { name: "WORK" },
