@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { ModalContext } from "../modal/modalContext";
 /** Element that represents a list in a given board with the whole droppable and draggable logic that works thanks to sortable Context */
 import { Heading4 } from "../typography";
 import IconifyIcon from "../icon";
@@ -13,6 +15,7 @@ import {
 //Dnd structure elements
 import Droppable from "./droppable";
 import Draggable from "./draggable";
+import { set } from "lodash";
 
 export default function ListCard({
   listTitle,
@@ -20,6 +23,14 @@ export default function ListCard({
   taskList = [],
   ...listCardProps
 }) {
+  const { handleOpenModal, handleUpdateTaskFunction } = useContext(ModalContext);
+
+  const openModal = () => {
+    let dateOfTheDay = new Date().toLocaleDateString("fr");
+    let newTask = {startDate: dateOfTheDay, status:listTitle}
+    handleUpdateTaskFunction(newTask)
+    handleOpenModal();
+  };
   return (
     <SortableContext
       id={listTitle}
@@ -51,7 +62,7 @@ export default function ListCard({
               })}
           </div>
           <div className="list-footer border-t border-solid border-color-light-grey py-1">
-            <AddButton addButtonClass="m-auto" addText={true}>
+            <AddButton addButtonClass="m-auto" addText={true} onClick={openModal}>
               Ajouter
             </AddButton>
           </div>
