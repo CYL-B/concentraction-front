@@ -6,9 +6,9 @@ export const ModalContext = createContext();
 
 export function ModalProvider({ children }) {
   //retrieves values returned from custom hook and pass them to the provider so children components in the tree  can access them
-  const { modal, closeModal, handleOpenModal } = useOpenModal();
+  const {modal, handleOpenModal, closeModal, ref, todayTask, handleUpdateTaskFunction } = useOpenModal();
   return (
-    <ModalContext.Provider value={{ modal, closeModal, handleOpenModal }}>
+    <ModalContext.Provider value={{ modal, handleOpenModal, closeModal, ref, todayTask, handleUpdateTaskFunction}}>
       {children}
     </ModalContext.Provider>
   );

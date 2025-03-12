@@ -29,7 +29,7 @@ export function Modal() {
         <div
           role="dialog"
           aria-labelledby="Add a task"
-          className={`modal-content flex flex-col justify-between items-center translate-y-0 w-1/2 h-full bg-brand-yellow border-8 border-solid border-neutral-white rounded-md ${
+          className={`modal-content flex flex-col justify-between items-center translate-y-0 w-1/2 h-full overflow-y-auto bg-brand-yellow border-8 border-solid border-neutral-white rounded-md ${
             modal
               ? "translate-x-0"
               : "-translate-x-full transition-all duration-900 ease-in-out"

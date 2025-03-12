@@ -6,10 +6,17 @@
  * event.target : element clicked
 */
 import { useState, useEffect, useRef } from "react";
+
 export function useOpenModal() {
   const [modal, setModal] = useState(false);
+  const [todayTask, setTodayTask] = useState({startDate: "", status: ""});
 
   const ref = useRef();
+
+  const handleUpdateTaskFunction = (task) => {
+    setTodayTask(() => task);
+    console.log("today", todayTask);
+  }
   const handleOpenModal = () => {
     setModal(!modal);
   };
@@ -55,5 +62,5 @@ export function useOpenModal() {
     };
   }, [modal]);
 
-  return { modal, handleOpenModal, closeModal, ref };
+  return { modal, handleOpenModal, closeModal, ref, todayTask, handleUpdateTaskFunction };
 }
