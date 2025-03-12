@@ -1,7 +1,7 @@
 /*Custom dropdown component : does not use select and option elements
-Dropdown : dropdown with select and options */ 
+Dropdown : dropdown with select and options */
 import IconifyIcon from "../icon";
-import { Body } from "../typography";
+import { Body, Fineprint } from "../typography";
 import { useState } from "react";
 
 export function Dropdown({
@@ -9,6 +9,7 @@ export function Dropdown({
   options,
   name,
   variant = "text-light",
+  errors,
   ...rest
 }) {
   return (
@@ -46,14 +47,15 @@ export function CustomDropdown({
   headerTitle,
   options = [],
   onChange,
-  value
+  value,
+  errors,
 }) {
   //if toggleOpen, dropdown opens, if not, dropdown closes.
   //selected : object with isSelected and selectedValue properties
   const [toggleOpen, setToggleOpen] = useState(false);
   const [selected, setSelected] = useState({
     isSelected: false,
-    selectedValue: value
+    selectedValue: value,
   });
 
   //fires when clicked on button, toggles dropdown.
@@ -67,14 +69,12 @@ export function CustomDropdown({
   //onChange: uses reverse data flow => sends info on the option selected to the parent
   const handleSelect = (e, option) => {
     setSelected({ isSelected: true, selectedValue: option.name });
-    onChange(option.name)
+    onChange(option.name);
     setToggleOpen(false);
   };
 
   return (
-    <div
-      className="dropdown-wrapper relative max-w-40"
-    >
+    <div className="dropdown-wrapper relative w-full">
       <a
         href="#"
         aria-haspopup="dropdown-list"
@@ -90,7 +90,7 @@ export function CustomDropdown({
         }`}
       >
         <Body body2 classBody="font-bold">
-          {selected.isSelected ?  selected.selectedValue : headerTitle}
+          {selected.isSelected ? selected.selectedValue : headerTitle}
         </Body>
         <IconifyIcon
           iconName="raphael:arrowdown"
@@ -111,7 +111,7 @@ export function CustomDropdown({
               <li
                 role="option"
                 aria-label={option.name}
-                aria-selected={option.name ==  selected.selectedValue}
+                aria-selected={option.name == selected.selectedValue}
                 className={`list-item${index} text-brand-blue font-nunito p-3 w-full`}
                 name={option.name}
                 key={option.name}
@@ -128,6 +128,11 @@ export function CustomDropdown({
           })}
         </ul>
       ) : null}
+      {errors && (
+        <Fineprint role="alert" classFineprint={"text-brand-red"}>
+          {errors.message}
+        </Fineprint>
+      )}
     </div>
   );
 }
