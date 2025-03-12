@@ -14,8 +14,8 @@ export default function Tabs({
   //getHeader = function passed as a prop which returns the name of each tab button
   //renderContent = function passed as a prop which returns the active content based on the active tab id.
   const [active, setActive] = useState(tabsIds[0]);
-    const { handleOpenModal } = useContext(ModalContext);
-  
+  const { handleOpenModal } = useContext(ModalContext);
+
   const openModal = () => {
     handleOpenModal();
   };
@@ -46,7 +46,9 @@ export default function Tabs({
         </div>
       </div>
       <div className="Tabs__buttons flex justify-between w-100">
-        <Button onClick={() => setActive("Day view")} variant="secondary">Today</Button>
+        <Button onClick={() => setActive("Day view")} variant="secondary">
+          Today
+        </Button>
         <Button onClick={openModal}>New Task</Button>
       </div>
     </>
