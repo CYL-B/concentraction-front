@@ -197,7 +197,7 @@ export function AddATask() {
               onChange={onChange}
               errors={errors.status}
               value={todayTask?.status !== "" ? todayTask?.status : value}
-              headerTitle={"Statut"}
+              headerTitle={todayTask?.status !== "" ? todayTask?.status : "Statut"}
             />
           )}
         />

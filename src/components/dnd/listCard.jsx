@@ -15,7 +15,6 @@ import {
 //Dnd structure elements
 import Droppable from "./droppable";
 import Draggable from "./draggable";
-import { set } from "lodash";
 
 export default function ListCard({
   listTitle,
@@ -29,6 +28,7 @@ export default function ListCard({
     let dateOfTheDay = new Date().toLocaleDateString("fr");
     let newTask = {startDate: dateOfTheDay, status:listTitle}
     handleUpdateTaskFunction(newTask)
+    console.log("newTask", newTask)
     handleOpenModal();
   };
   return (
