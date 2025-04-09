@@ -4,7 +4,7 @@ import { ModalContext } from "../modal/modalContext";
 import { Heading4 } from "../typography";
 import IconifyIcon from "../icon";
 import { AddButton } from "../button";
-import Card from "./card";
+import { Card, CardButtonsBar } from "./card";
 
 //dnd kit
 import {
@@ -22,13 +22,14 @@ export default function ListCard({
   taskList = [],
   ...listCardProps
 }) {
-  const { handleOpenModal, handleUpdateTaskFunction } = useContext(ModalContext);
+  const { handleOpenModal, handleUpdateTaskFunction } =
+    useContext(ModalContext);
 
   const openModal = () => {
     let dateOfTheDay = new Date().toLocaleDateString("fr");
-    let newTask = {startDate: dateOfTheDay, status:listTitle}
-    handleUpdateTaskFunction(newTask)
-    console.log("newTask", newTask)
+    let newTask = { startDate: dateOfTheDay, status: listTitle };
+    handleUpdateTaskFunction(newTask);
+    console.log("newTask", newTask);
     handleOpenModal();
   };
   return (
@@ -50,19 +51,32 @@ export default function ListCard({
             {taskList &&
               taskList.map((task, index) => {
                 return (
-                  <Draggable id={task.id}>
-                    <Card
-                      key={task.name}
-                      cardTitle={task.name}
-                      cardDate={task.endDate}
-                      cardTag={task.category}
+                  <div className="group relative transition duration-200">
+                    <Draggable id={task.id}>
+                      <Card
+                        key={task.name}
+                        cardId={task.id}
+                        cardTitle={task.name}
+                        cardDate={task.endDate}
+                        cardTag={task.category}
+                      />
+                    </Draggable>
+                    <CardButtonsBar
+                      cardButtonsBarDeleteId={task.id}
+                      cardButtonsBarClass={
+                        " max-h-0 pointer-events-none scale-95 opacity-0 overflow-hidden translate-y-[-0.25rem] transition-all transition-behavior[allow-discrete] duration-300 ease-in-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:scale-100 group-hover:max-h-20"
+                      }
                     />
-                  </Draggable>
+                  </div>
                 );
               })}
           </div>
           <div className="list-footer border-t border-solid border-color-light-grey py-1">
-            <AddButton addButtonClass="m-auto" addText={true} onClick={openModal}>
+            <AddButton
+              addButtonClass="m-auto"
+              addText={true}
+              onClick={openModal}
+            >
               Ajouter
             </AddButton>
           </div>

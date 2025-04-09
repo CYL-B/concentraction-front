@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ListCard from "../../dnd/listCard";
-import Card from "../../dnd/card";
+import {Card} from "../../dnd/card";
 import GetTasksByDate from "../../../data/tasks";
 
 //custom hooks
@@ -232,6 +232,7 @@ export function DayView() {
           })}
           <DragOverlay dropAnimation={dropAnimation}>
             {task ? (
+              
               <Card
                 cardDate={new Date(Number(task.endDate)).toLocaleDateString(
                   "fr"
